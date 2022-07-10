@@ -44,6 +44,7 @@ export interface SystemMember {
   description?: string;
   links?: EntityLink[];
   roles?: string[],
+  tags?: string[],
 }
 
 export interface EntityLink {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dimensions, FlatList, ScrollView, StyleSheet } from 'react-native';
+import { Dimensions, FlatList, Pressable, ScrollView, StyleSheet } from 'react-native';
 import MemberCard from '../components/MemberCard';
 
 import { View, TextInput } from '../components/Themed';
@@ -7,6 +7,7 @@ import { RootTabScreenProps, SystemMember } from '../types';
 
 export default function MembersScreen({ navigation }: RootTabScreenProps<'Members'>) {
   const [searchText, setSearchText] = useState<string>('');
+  const [pressedMember, setPressedMember] = useState<string>('');
   
   const members: SystemMember[] = [{
     id: 'alice',
@@ -36,6 +37,7 @@ export default function MembersScreen({ navigation }: RootTabScreenProps<'Member
     avatar: 'https://violasys.github.io/assets/images/pfp-caroline.png',
     pronouns: 'She/Her',
     roles: ['former host'],
+    tags: ['middle'],
   },{
     id: 'gwen-mem',
     name: 'Morrigan',
@@ -51,11 +53,25 @@ export default function MembersScreen({ navigation }: RootTabScreenProps<'Member
       member.pronouns || '',
     ];
     (member.roles || []).forEach(role => fields.push(role));
+    (member.tags || []).forEach(tag => fields.push(tag));
     return fields.some(f => f.toLocaleLowerCase().indexOf(searchText) >= 0);
   });
 
   const dimensions = Dimensions.get('window');
   const isPortrait = dimensions.height >= dimensions.width * 16. / 12.;
+
+  const renderItem = ({ item }: { item: SystemMember }) => {
+    return <Pressable 
+        onPress={() => {}}
+        onPressIn={() => setPressedMember(item.id)}
+        onPressOut={() => setPressedMember('')}
+        style={{ 
+          flex: 1,
+          opacity: pressedMember === item.id ? 0.6 : 1.0,
+        }}>
+        <MemberCard member={item} />
+      </Pressable>; 
+  };
 
   return (
     <View style={styles.container}>
@@ -66,13 +82,15 @@ export default function MembersScreen({ navigation }: RootTabScreenProps<'Member
       />
       <FlatList 
         data={members}
-        renderItem={({ item }) => (<MemberCard member={item} />)}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id}
         numColumns={isPortrait ? 1 : 2}
+        extraData={pressedMember}
        />
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
