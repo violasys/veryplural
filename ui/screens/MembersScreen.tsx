@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Dimensions, FlatList, ScrollView, StyleSheet } from 'react-native';
+import MemberCard from '../components/MemberCard';
 
 import { View, TextInput } from '../components/Themed';
 import { RootTabScreenProps, SystemMember } from '../types';
-import MemberCard from './MemberCard';
 
 export default function MembersScreen({ navigation }: RootTabScreenProps<'Members'>) {
   const [searchText, setSearchText] = useState<string>('');
