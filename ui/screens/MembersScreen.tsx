@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Dimensions, FlatList, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Dimensions, FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import MemberCard from '../components/MemberCard';
 
 import { BgView, TextInput } from '../components/Themed';
@@ -7,10 +7,8 @@ import { RootTabScreenProps, SystemMember } from '../types';
 import { getOrientation } from '../util/orientation';
 
 export default function MembersScreen({ navigation }: RootTabScreenProps<'Members'>) {
-  const [searchText, setSearchText] = useState<string>('');
-  const [pressedMember, setPressedMember] = useState<string>('');
   const [members, setMembers] = useState<SystemMember[]>([]);
-  const orientation = getOrientation();
+  const [memberFilter, setMemberFilter] = useState<MembersFilter>({ apply: (x) => x });
   
   const allMembers: SystemMember[] = [{
     id: 'alice',
@@ -50,7 +48,28 @@ export default function MembersScreen({ navigation }: RootTabScreenProps<'Member
   }];
 
   useEffect(() => {
-    const filtered = allMembers.filter((member: SystemMember) => {
+    setMembers(memberFilter.apply(allMembers));
+  }, [memberFilter])
+
+  return (
+    <BgView style={styles.container}>
+      <FilterControls setFilter={setMemberFilter} />
+      <MemberList members={members} />
+    </BgView>
+  );
+}
+
+interface MembersFilter {
+  apply: (members: SystemMember[]) => SystemMember[],
+}
+
+interface FilterControlsProps {
+  setFilter: (filter: MembersFilter) => void;
+}
+
+const FilterControls = (props: FilterControlsProps): React.ReactElement => {
+  const createFilter = (searchText: string): MembersFilter => {
+    const apply = (members: SystemMember[]) => members.filter((member: SystemMember) => {
       const fields = [
         member.id,
         member.name,
@@ -62,8 +81,28 @@ export default function MembersScreen({ navigation }: RootTabScreenProps<'Member
       (member.tags || []).forEach(tag => fields.push(tag));
       return fields.some(f => f.toLocaleLowerCase().indexOf(searchText) >= 0)
     });
-    setMembers(filtered);
-  }, [searchText]);
+    return { apply };
+  }
+
+  return <View style={styles.filterView}>
+  <TextInput
+    style={styles.search}
+    placeholder="Search"
+    onChangeText={(text) => {
+      props.setFilter(createFilter(text.trim().toLocaleLowerCase()));
+    }}
+    />
+    </View>;
+
+}
+
+interface MemberListProps {
+  members: SystemMember[];
+}
+
+const MemberList = (props: MemberListProps): React.ReactElement => {
+  const [pressedMember, setPressedMember] = useState<string>('');
+  const orientation = getOrientation();
 
   const renderItem = ({ item }: { item: SystemMember }) => {
     return <Pressable 
@@ -78,27 +117,15 @@ export default function MembersScreen({ navigation }: RootTabScreenProps<'Member
       </Pressable>; 
   };
 
-  return (
-    <BgView style={styles.container}>
-      <TextInput
-        style={styles.search}
-        placeholder="Search"
-        onChangeText={(text) => {
-          setSearchText(text.trim().toLocaleLowerCase());
-        }}
-      />
-      <FlatList 
-        key={`members-${orientation}`}
-        data={members}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        numColumns={orientation === 'portrait' ? 1 : 2}
-        extraData={[pressedMember, searchText]}
-       />
-    </BgView>
-  );
-}
-
+  return <FlatList 
+    key={`members-${orientation}`}
+    data={props.members}
+    renderItem={renderItem}
+    keyExtractor={(item) => item.id}
+    numColumns={orientation === 'portrait' ? 1 : 2}
+    extraData={[pressedMember]}
+  />;
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -108,9 +135,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 8,
   },
+  filterView: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignContent: 'stretch',
+    margin: 8,
+  },
   search: {
-    marginLeft: 8,
-    marginRight: 8,
+    flex: 1,
     fontSize: 20,
     padding: 8,
   },
