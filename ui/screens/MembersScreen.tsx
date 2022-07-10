@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Dimensions, FlatList, Pressable, ScrollView, StyleSheet } from 'react-native';
 import MemberCard from '../components/MemberCard';
 
-import { View, TextInput } from '../components/Themed';
+import { BgView, TextInput } from '../components/Themed';
 import { RootTabScreenProps, SystemMember } from '../types';
 import { getOrientation } from '../util/orientation';
 
@@ -79,7 +79,7 @@ export default function MembersScreen({ navigation }: RootTabScreenProps<'Member
   };
 
   return (
-    <View style={styles.container}>
+    <BgView style={styles.container}>
       <TextInput
         style={styles.search}
         placeholder="Search"
@@ -95,7 +95,7 @@ export default function MembersScreen({ navigation }: RootTabScreenProps<'Member
         numColumns={orientation === 'portrait' ? 1 : 2}
         extraData={[pressedMember, searchText]}
        />
-    </View>
+    </BgView>
   );
 }
 

@@ -38,11 +38,32 @@ export function Text(props: TextProps) {
   return <DefaultText style={[{ color }, style]} {...otherProps} />;
 }
 
-export function View(props: ViewProps) {
+export function BgView(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
+}
+
+
+export function FgView(props: ViewProps) {
+  const { style, lightColor, darkColor, ...otherProps } = props;
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'foreground');
+  const borderColor = useThemeColor({ light: lightColor, dark: darkColor }, 'borderColor');
+
+  const theme = useColorScheme();
+  const borderProps = theme === 'light' ? {
+    borderTopWidth: 1,
+    borderRightWidth: 1,
+    borderLeftWidth: 2,
+    borderBottomWidth: 2,
+    borderRadius: 8,
+  } : { borderWidth: 0 };
+
+  return <DefaultView style={[{ 
+    backgroundColor, 
+    borderColor,
+  }, borderProps, style]} {...otherProps} />;
 }
 
 export function TextInput(props: TextInputProps) {
