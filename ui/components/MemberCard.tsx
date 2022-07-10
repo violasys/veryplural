@@ -1,6 +1,6 @@
 import { Appearance, StyleSheet, View } from 'react-native';
 
-import { Text } from '../components/Themed';
+import { Text } from './Themed';
 import { SystemMember } from '../types';
 import Avi from './Avi';
 
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
       borderRadius: 8,
       margin: 8,
       flex: 1,
+      overflow: 'hidden',
     },
     light: {
         borderColor: '#c6c6c6',

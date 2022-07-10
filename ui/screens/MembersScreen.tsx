@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dimensions, FlatList, Pressable, ScrollView, StyleSheet } from 'react-native';
 import MemberCard from '../components/MemberCard';
 
 import { View, TextInput } from '../components/Themed';
 import { RootTabScreenProps, SystemMember } from '../types';
+import { getOrientation } from '../util/orientation';
 
 export default function MembersScreen({ navigation }: RootTabScreenProps<'Members'>) {
   const [searchText, setSearchText] = useState<string>('');
   const [pressedMember, setPressedMember] = useState<string>('');
+  const [members, setMembers] = useState<SystemMember[]>([]);
+  const orientation = getOrientation();
   
-  const members: SystemMember[] = [{
+  const allMembers: SystemMember[] = [{
     id: 'alice',
     name: 'Alice',
     avatar: 'https://violasys.github.io/assets/images/pfp-alice2.png',
@@ -44,21 +47,23 @@ export default function MembersScreen({ navigation }: RootTabScreenProps<'Member
     avatar: 'https://violasys.github.io/assets/images/pfp-gwen-mem.png',
     pronouns: 'She/They',
     roles: ['gatekeeper'],
-  }].filter((member: SystemMember) => {
-    const fields = [
-      member.id,
-      member.name,
-      member.displayname || '',
-      member.description || '',
-      member.pronouns || '',
-    ];
-    (member.roles || []).forEach(role => fields.push(role));
-    (member.tags || []).forEach(tag => fields.push(tag));
-    return fields.some(f => f.toLocaleLowerCase().indexOf(searchText) >= 0);
-  });
+  }];
 
-  const dimensions = Dimensions.get('window');
-  const isPortrait = dimensions.height >= dimensions.width * 16. / 12.;
+  useEffect(() => {
+    const filtered = allMembers.filter((member: SystemMember) => {
+      const fields = [
+        member.id,
+        member.name,
+        member.displayname || '',
+        member.description || '',
+        member.pronouns || '',
+      ];
+      (member.roles || []).forEach(role => fields.push(role));
+      (member.tags || []).forEach(tag => fields.push(tag));
+      return fields.some(f => f.toLocaleLowerCase().indexOf(searchText) >= 0)
+    });
+    setMembers(filtered);
+  }, [searchText]);
 
   const renderItem = ({ item }: { item: SystemMember }) => {
     return <Pressable 
@@ -78,14 +83,17 @@ export default function MembersScreen({ navigation }: RootTabScreenProps<'Member
       <TextInput
         style={styles.search}
         placeholder="Search"
-        onChangeText={(text) => setSearchText(text.trim().toLocaleLowerCase())}
+        onChangeText={(text) => {
+          setSearchText(text.trim().toLocaleLowerCase());
+        }}
       />
       <FlatList 
+        key={`members-${orientation}`}
         data={members}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        numColumns={isPortrait ? 1 : 2}
-        extraData={pressedMember}
+        numColumns={orientation === 'portrait' ? 1 : 2}
+        extraData={[pressedMember, searchText]}
        />
     </View>
   );
