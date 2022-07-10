@@ -1,8 +1,10 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { Dimensions, FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Dimensions, FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import IconButton from '../components/IconButton';
 import MemberCard from '../components/MemberCard';
 
-import { BgView, TextInput } from '../components/Themed';
+import { BgView, TextInput, useThemeColor } from '../components/Themed';
 import { RootTabScreenProps, SystemMember } from '../types';
 import { getOrientation } from '../util/orientation';
 
@@ -68,6 +70,8 @@ interface FilterControlsProps {
 }
 
 const FilterControls = (props: FilterControlsProps): React.ReactElement => {
+  const color = useThemeColor({}, 'text');
+
   const createFilter = (searchText: string): MembersFilter => {
     const apply = (members: SystemMember[]) => members.filter((member: SystemMember) => {
       const fields = [
@@ -92,7 +96,14 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
       props.setFilter(createFilter(text.trim().toLocaleLowerCase()));
     }}
     />
-    </View>;
+    <IconButton 
+      icon={(props) => <Ionicons size={26} name="filter" {...props} />}
+    />
+    <IconButton 
+      icon={(props) => <Ionicons size={26} name="grid" {...props} />}
+      selected={true}
+    />
+  </View>;
 
 }
 
