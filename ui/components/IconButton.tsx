@@ -8,47 +8,49 @@ export default function IconButton(props: IconButtonProps): React.ReactElement {
   const Icon = props.icon;
 
   const style: ViewStyle[] = [styles.container];
-  
+
   if (pressed) {
     style.push(styles.pressed);
   }
 
-  return <Pressable 
-  onPressIn={() => setPressed(true)}
-  onPressOut={() => setPressed(false)}
-  onPress={() => {
-    if (typeof props.onPress !== 'undefined') {
-        (props.onPress)();
-    }
-  }}>
-    <View style={style}>
-      <Icon color={color} />
-    </View>
-  </Pressable>;
+  return (
+    <Pressable
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      onPress={() => {
+        if (typeof props.onPress !== "undefined") {
+          props.onPress();
+        }
+      }}
+    >
+      <View style={style}>
+        <Icon color={color} />
+      </View>
+    </Pressable>
+  );
 }
 
 export interface IconButtonProps {
-    onPress?: () => void,
-    selected?: boolean,
-    icon: (props: { color: string }) => React.ReactElement,
+  onPress?: () => void;
+  selected?: boolean;
+  icon: (props: { color: string }) => React.ReactElement;
 }
 
 const getColorType = (selected?: boolean) => {
-    if (typeof selected === 'undefined') {
-        return 'text';
-    }
-    return !!selected ? 'tabIconSelected' : 'tabIconDefault';
-}
+  if (typeof selected === "undefined") {
+    return "text";
+  }
+  return !!selected ? "tabIconSelected" : "tabIconDefault";
+};
 
 const styles = StyleSheet.create({
-    container: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 8,
-    },
-    pressed: {
-        opacity: 0.6,
-    },
-  });
-  
+  container: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 8,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+});
