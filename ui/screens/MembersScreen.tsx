@@ -40,6 +40,7 @@ export default function MembersScreen({
       name: "Ria",
       avatar: "https://violasys.github.io/assets/images/pfp-ria2s.png",
       pronouns: "She/Her",
+      description: "hi this is some placeholder text",
     },
     {
       id: "gwen",
@@ -71,6 +72,8 @@ export default function MembersScreen({
     },
   ];
 
+  const [fronting, setFronting] = useState(["demi", "gwen"]);
+
   useEffect(() => {
     setMembers(memberFilter.apply(allMembers));
   }, [memberFilter]);
@@ -78,7 +81,18 @@ export default function MembersScreen({
   return (
     <BgView style={styles.container}>
       <FilterControls setFilter={setMemberFilter} />
-      <MemberList members={members} />
+      <MemberList
+        members={members}
+        frontingIds={fronting}
+        showFronting={true}
+        setFronting={(id: string, f: boolean) => {
+          if (f) {
+            setFronting([id, ...fronting]);
+          } else {
+            setFronting(fronting.filter((i) => i !== id));
+          }
+        }}
+      />
     </BgView>
   );
 }
@@ -145,16 +159,25 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
 
 interface MemberListProps {
   members: SystemMember[];
+  showFronting: boolean;
+  frontingIds: string[];
+  setFronting?: (id: string, fronting: boolean) => void;
 }
 
 const MemberList = (props: MemberListProps): React.ReactElement => {
   const [pressedMember, setPressedMember] = useState<string>("");
+  const [expanded, setExpanded] = useState<string>("");
   const orientation = getOrientation();
+  const fronting = new Set<string>();
+  props.frontingIds.forEach((id) => fronting.add(id));
 
   const renderItem = ({ item }: { item: SystemMember }) => {
+    const isFronting = fronting.has(item.id);
     return (
       <Pressable
-        onPress={() => {}}
+        onPress={() => {
+          setExpanded(item.id);
+        }}
         onPressIn={() => setPressedMember(item.id)}
         onPressOut={() => setPressedMember("")}
         style={{
@@ -162,7 +185,17 @@ const MemberList = (props: MemberListProps): React.ReactElement => {
           opacity: pressedMember === item.id ? 0.6 : 1.0,
         }}
       >
-        <MemberCard member={item} />
+        <MemberCard
+          member={item}
+          showFronting={props.showFronting}
+          isFronting={isFronting}
+          showDetails={expanded === item.id}
+          setFronting={
+            props.setFronting
+              ? (f) => props.setFronting!(item.id, f)
+              : undefined
+          }
+        />
       </Pressable>
     );
   };
@@ -174,7 +207,7 @@ const MemberList = (props: MemberListProps): React.ReactElement => {
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
       numColumns={orientation === "portrait" ? 1 : 2}
-      extraData={[pressedMember]}
+      extraData={[pressedMember, expanded]}
     />
   );
 };

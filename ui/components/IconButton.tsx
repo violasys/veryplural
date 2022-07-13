@@ -5,7 +5,10 @@ import { useThemeColor } from "./Themed";
 export default function IconButton(props: IconButtonProps): React.ReactElement {
   const color = useThemeColor({}, getColorType(props.selected));
   const [pressed, setPressed] = useState<boolean>(false);
-  const Icon = props.icon;
+  const Icon =
+    props.selected || typeof props.offIcon === "undefined"
+      ? props.icon
+      : props.offIcon!;
 
   const style: ViewStyle[] = [styles.container];
 
@@ -34,6 +37,7 @@ export interface IconButtonProps {
   onPress?: () => void;
   selected?: boolean;
   icon: (props: { color: string }) => React.ReactElement;
+  offIcon?: (props: { color: string }) => React.ReactElement;
 }
 
 const getColorType = (selected?: boolean) => {
