@@ -58,29 +58,31 @@ export function FgView(props: ViewProps) {
     { light: lightColor, dark: darkColor },
     "foreground"
   );
-  const borderColor = useThemeColor(
+  const shadowColor = useThemeColor(
     { light: lightColor, dark: darkColor },
-    "borderColor"
+    "shadowColor"
   );
 
   const theme = useColorScheme();
   const borderProps =
     theme === "light"
       ? {
-          borderTopWidth: 1,
-          borderRightWidth: 1,
-          borderLeftWidth: 2,
-          borderBottomWidth: 2,
-          borderRadius: 8,
+          shadowRadius: 4,
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
         }
-      : { borderWidth: 0 };
+      : {};
 
   return (
     <DefaultView
       style={[
         {
           backgroundColor,
-          borderColor,
+          shadowColor,
+          borderRadius: 8,
+          overflow: "hidden",
         },
         borderProps,
         style,

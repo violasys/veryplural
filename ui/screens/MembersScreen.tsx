@@ -4,15 +4,18 @@ import {
   Button,
   Dimensions,
   FlatList,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   View,
 } from "react-native";
+import Card from "../components/Card";
 import IconButton from "../components/IconButton";
 import MemberCard from "../components/MemberCard";
+import SelectModal from "../components/SelectModal";
 
-import { BgView, TextInput, useThemeColor } from "../components/Themed";
+import { BgView, Text, TextInput, useThemeColor } from "../components/Themed";
 import { RootTabScreenProps, SystemMember } from "../types";
 import { getOrientation } from "../util/orientation";
 
@@ -110,8 +113,17 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
     return { apply };
   };
 
+  const [showingFilterModal, setShowingFilterModal] = useState<boolean>(false);
+
   return (
     <View style={styles.filterView}>
+      <SelectModal
+        visible={showingFilterModal}
+        onClose={(f) => {
+          setShowingFilterModal(false);
+        }}
+        options={[{ value: "all" }]}
+      />
       <TextInput
         style={styles.search}
         placeholder="Search"
@@ -121,6 +133,7 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
       />
       <IconButton
         icon={(props) => <Ionicons size={26} name="filter" {...props} />}
+        onPress={() => setShowingFilterModal(true)}
       />
       <IconButton
         icon={(props) => <Ionicons size={26} name="grid" {...props} />}
