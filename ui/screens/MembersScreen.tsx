@@ -176,7 +176,11 @@ const MemberList = (props: MemberListProps): React.ReactElement => {
     return (
       <Pressable
         onPress={() => {
-          setExpanded(item.id);
+          if (expanded !== item.id) {
+            setExpanded(item.id);
+          } else {
+            setExpanded("");
+          }
         }}
         onPressIn={() => setPressedMember(item.id)}
         onPressOut={() => setPressedMember("")}
