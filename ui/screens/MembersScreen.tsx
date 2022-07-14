@@ -22,6 +22,7 @@ export default function MembersScreen({
       avatar: "https://violasys.github.io/assets/images/pfp-ria2s.png",
       pronouns: "She/Her",
       description: "hi this is some placeholder text",
+      color: "#aa2222",
     },
     {
       id: "gwen",
@@ -29,6 +30,7 @@ export default function MembersScreen({
       avatar: "https://violasys.github.io/assets/images/pfp-gwen.png",
       pronouns: "She/Her",
       roles: ["host"],
+      color: "#881188",
     },
     {
       id: "melanie",
@@ -43,6 +45,7 @@ export default function MembersScreen({
       pronouns: "She/Her",
       roles: ["former host"],
       tags: ["middle"],
+      color: "#00ffff",
     },
     {
       id: "gwen-mem",
@@ -50,6 +53,14 @@ export default function MembersScreen({
       avatar: "https://violasys.github.io/assets/images/pfp-gwen-mem.png",
       pronouns: "She/They",
       roles: ["gatekeeper"],
+      color: "#000000",
+    },
+    {
+      id: "jan",
+      name: "Jan",
+      pronouns: "They/Them",
+      roles: ["former host"],
+      color: "#116611",
     },
   ];
 

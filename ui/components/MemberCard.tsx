@@ -10,10 +10,12 @@ import Spacer from "./Spacer";
 import Ruler from "./Ruler";
 
 export default function MemberCard(props: MemberCardProps) {
+  const showFrontingControl =
+    props.showFronting && (props.setFronting || props.isFronting);
   return (
     <Card style={styles.card}>
       <View style={styles.main}>
-        <Avi uri={props.member.avatar} />
+        <Avi uri={props.member.avatar} color={props.member.color} />
         <View style={[styles.namebox]}>
           <Text style={styles.name}>
             {props.member.displayname || props.member.name}
@@ -24,7 +26,7 @@ export default function MemberCard(props: MemberCardProps) {
         </View>
         <Spacer />
         <View style={styles.controls}>
-          {props.showFronting && (
+          {showFrontingControl && (
             <IconButton
               icon={(props) => (
                 <MaterialCommunityIcons name="steering" size={32} {...props} />
