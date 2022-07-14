@@ -1,7 +1,11 @@
-import { Ionicons } from "@expo/vector-icons";
+import {
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { SystemMember } from "../types";
+import { Comparator, Predicate, SystemMember } from "../types";
 import IconButton from "./IconButton";
 import MembersList, {
   MemberListProps as MembersListProps,
@@ -26,7 +30,10 @@ export default function SearchableMembersList(
 
   return (
     <View style={styles.container}>
-      <FilterControls setFilter={setMemberFilter} />
+      <FilterControls
+        setFilter={setMemberFilter}
+        frontingIds={otherProps.frontingIds}
+      />
       <MembersList members={members} {...otherProps} />
     </View>
   );
@@ -37,52 +44,108 @@ interface MembersFilter {
 }
 
 interface FilterControlsProps {
+  frontingIds: string[];
   setFilter: (filter: MembersFilter) => void;
 }
+
+type SortMode = "Alphabetical" | "Fronting";
 
 const FilterControls = (props: FilterControlsProps): React.ReactElement => {
   const color = useThemeColor({}, "text");
 
-  const createFilter = (searchText: string): MembersFilter => {
-    const apply = (members: SystemMember[]) =>
-      members.filter((member: SystemMember) => {
-        const fields = [
-          member.id,
-          member.name,
-          member.displayname || "",
-          member.description || "",
-          member.pronouns || "",
-        ];
-        (member.roles || []).forEach((role) => fields.push(role));
-        (member.tags || []).forEach((tag) => fields.push(tag));
-        return fields.some(
-          (f) => f.toLocaleLowerCase().indexOf(searchText) >= 0
-        );
-      });
+  const [searchText, setSearchText] = useState<string>("");
+  const [sortMode, setSortMode] = useState<SortMode>("Alphabetical");
+  const [showingSortModal, setShowingSortModal] = useState<boolean>(false);
+
+  const createFilter =
+    (searchText: string): Predicate<SystemMember> =>
+    (member) => {
+      const fields = [
+        member.id,
+        member.name,
+        member.displayname || "",
+        member.description || "",
+        member.pronouns || "",
+      ];
+      (member.roles || []).forEach((role) => fields.push(role));
+      (member.tags || []).forEach((tag) => fields.push(tag));
+      return fields.some((f) => f.toLocaleLowerCase().indexOf(searchText) >= 0);
+    };
+
+  const comparators = new Map<SortMode, Comparator<SystemMember>>();
+  comparators.set("Alphabetical", (a, b) =>
+    (a.displayname || a.name).localeCompare(b.displayname || b.name)
+  );
+  comparators.set("Fronting", (a, b) => {
+    const af = props.frontingIds.some((id) => id === a.id);
+    const bf = props.frontingIds.some((id) => id === b.id);
+    if (af === bf) {
+      return comparators.get("Alphabetical")!(a, b);
+    }
+    return af ? -1 : 1;
+  });
+
+  const createComparator = (
+    sortMode: SortMode
+  ): ((a: SystemMember, b: SystemMember) => number) => {
+    return comparators.get(sortMode)!;
+  };
+
+  const createTransform = (
+    searchText: string,
+    sortMode: SortMode
+  ): MembersFilter => {
+    const apply = (members: SystemMember[]) => {
+      const filtered = members.filter(createFilter(searchText));
+      filtered.sort(createComparator(sortMode));
+      return filtered;
+    };
     return { apply };
   };
 
-  const [showingFilterModal, setShowingFilterModal] = useState<boolean>(false);
+  useEffect(() => {
+    props.setFilter(createTransform(searchText, sortMode));
+  }, [searchText, sortMode, props.frontingIds]);
 
   return (
     <View style={styles.filterView}>
-      <SelectModal
-        visible={showingFilterModal}
-        onClose={(f) => {
-          setShowingFilterModal(false);
+      <SelectModal<SortMode>
+        visible={showingSortModal}
+        onClose={(choice) => {
+          setShowingSortModal(false);
+          if (typeof choice !== "undefined") {
+            setSortMode(choice);
+          }
         }}
-        options={[{ value: "all" }]}
+        options={[
+          {
+            value: "Alphabetical",
+            icon: (props: { color: string }) => (
+              <MaterialCommunityIcons
+                size={20}
+                name="sort-alphabetical-ascending"
+                {...props}
+              />
+            ),
+          },
+          {
+            value: "Fronting",
+            icon: (props: { color: string }) => (
+              <MaterialCommunityIcons size={20} name="steering" {...props} />
+            ),
+          },
+        ]}
       />
       <TextInput
         style={styles.search}
         placeholder="Search"
-        onChangeText={(text) => {
-          props.setFilter(createFilter(text.trim().toLocaleLowerCase()));
-        }}
+        onChangeText={(text) => setSearchText(text.trim().toLocaleLowerCase())}
       />
       <IconButton
-        icon={(props) => <Ionicons size={26} name="filter" {...props} />}
-        onPress={() => setShowingFilterModal(true)}
+        icon={(props) => (
+          <MaterialCommunityIcons size={26} name="sort" {...props} />
+        )}
+        onPress={() => setShowingSortModal(true)}
       />
       <IconButton
         icon={(props) => <Ionicons size={26} name="grid" {...props} />}

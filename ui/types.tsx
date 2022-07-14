@@ -53,3 +53,5 @@ export interface EntityLink {
   source: string;
   id: string;
 }
+
+export type Comparator<T> = (a: T, b: T) => number;

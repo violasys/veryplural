@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import Card from "./Card";
+import Ruler from "./Ruler";
 import { Text, useThemeColor } from "./Themed";
 
 export default function SelectModal<T>(props: Props<T>) {
@@ -55,11 +56,15 @@ export default function SelectModal<T>(props: Props<T>) {
         <Card style={styles.container}>
           <ScrollView style={{ flex: 1 }}>
             {props.options.map((option) => (
-              <SelectOption
-                key={optionKey(option)}
-                label={optionLabel(option)}
-                onSelect={() => props.onClose(option.value)}
-              />
+              <>
+                <SelectOption
+                  key={optionKey(option)}
+                  label={optionLabel(option)}
+                  onSelect={() => props.onClose(option.value)}
+                  icon={option.icon}
+                />
+                <Ruler />
+              </>
             ))}
           </ScrollView>
           <SelectOption
@@ -92,27 +97,22 @@ interface SelectOptionProps {
   label: string;
   onSelect: () => void;
   style?: TextStyle;
+  icon?: (props: { color: string }) => React.ReactElement;
 }
 
 const SelectOption = (props: SelectOptionProps) => {
   const [pressing, setPressing] = useState<boolean>(false);
-  const borderColor = useThemeColor({}, "shadowColor");
+  const iconColor = props.style?.color || useThemeColor({}, "text");
+  const Icon = props.icon || ((_props: { color: string }) => <></>);
   return (
     <Pressable
       onPress={props.onSelect}
       onPressIn={() => setPressing(true)}
       onPressOut={() => setPressing(false)}
+      style={[styles.option, pressing ? styles.pressed : styles.unpressed]}
     >
-      <Text
-        style={[
-          styles.option,
-          props.style,
-          { borderColor },
-          pressing ? styles.pressed : styles.unpressed,
-        ]}
-      >
-        {props.label}
-      </Text>
+      <Icon color={iconColor} />
+      <Text style={[styles.optionText, props.style]}>{props.label}</Text>
     </Pressable>
   );
 };
@@ -128,9 +128,15 @@ const styles = StyleSheet.create({
     },
   },
   option: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    alignContent: "center",
+    overflow: "hidden",
+  },
+  optionText: {
     padding: 10,
     fontSize: 20,
-    borderBottomWidth: 1,
     overflow: "hidden",
   },
   pressed: {
