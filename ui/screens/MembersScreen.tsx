@@ -23,6 +23,7 @@ export default function MembersScreen({
       pronouns: "She/Her",
       description: "hi this is some placeholder text",
       color: "#aa2222",
+      roles: ["trauma holder"],
     },
     {
       id: "gwen",
@@ -37,6 +38,7 @@ export default function MembersScreen({
       name: "Melanie",
       avatar: "https://violasys.github.io/assets/images/pfp-melanie.png",
       pronouns: "She/Her",
+      roles: ["worker"],
     },
     {
       id: "caroline",
@@ -52,8 +54,24 @@ export default function MembersScreen({
       name: "Morrigan",
       avatar: "https://violasys.github.io/assets/images/pfp-gwen-mem.png",
       pronouns: "She/They",
-      roles: ["gatekeeper"],
+      roles: ["gatekeeper", "eraser", "architect"],
       color: "#000000",
+    },
+    {
+      id: "lilah",
+      name: "Lilah",
+      avatar: "https://violasys.github.io/assets/images/pfp-gwen-lilah.png",
+      pronouns: "She/Her",
+      roles: ["co-host", "amnesian protector"],
+      color: "#aa11aa",
+    },
+    {
+      id: "demi",
+      name: "Demi",
+      avatar: "https://violasys.github.io/assets/images/pfp-gwen-demi.png",
+      pronouns: "She/They",
+      roles: ["co-host", "worker", "protector"],
+      color: "#aa11aa",
     },
     {
       id: "jan",
@@ -70,6 +88,7 @@ export default function MembersScreen({
     <BgView style={styles.container}>
       <SearchableMembersList
         members={members}
+        showAllDetails={true}
         frontingIds={fronting}
         showFronting={true}
         setFronting={(id: string, f: boolean) => {

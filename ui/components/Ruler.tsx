@@ -8,8 +8,8 @@ export default function Ruler(_props: {}): React.ReactElement {
       style={{
         borderTopColor: color,
         borderTopWidth: 1,
-        marginTop: 5,
-        marginBottom: 5,
+        marginTop: 8,
+        marginBottom: 8,
         opacity: 0.5,
       }}
     />

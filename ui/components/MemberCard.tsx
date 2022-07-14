@@ -8,6 +8,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import IconButton from "./IconButton";
 import Spacer from "./Spacer";
 import Ruler from "./Ruler";
+import Badge from "./Badge";
 
 export default function MemberCard(props: MemberCardProps) {
   const showFrontingControl =
@@ -60,9 +61,20 @@ export default function MemberCard(props: MemberCardProps) {
 }
 
 function Details(props: MemberCardProps): React.ReactElement {
+  const tags: string[] = [
+    ...(props.member.roles || []),
+    ...(props.member.tags || []),
+  ];
   return (
     <View style={styles.details}>
-      <Text>{props.member.description}</Text>
+      <Text style={styles.description}>{props.member.description}</Text>
+      {tags && (
+        <View style={styles.roles}>
+          {tags.map((role) => (
+            <Badge label={role} color="subtle" />
+          ))}
+        </View>
+      )}
     </View>
   );
 }
@@ -87,6 +99,14 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignItems: "stretch",
+  },
+  roles: {
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 8,
+  },
+  description: {
+    fontSize: 16,
   },
   main: {
     display: "flex",
