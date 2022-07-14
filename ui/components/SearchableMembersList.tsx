@@ -49,12 +49,13 @@ interface FilterControlsProps {
 }
 
 type SortMode = "Alphabetical" | "Fronting";
+const SORT_MODES: SortMode[] = ["Fronting", "Alphabetical"];
 
 const FilterControls = (props: FilterControlsProps): React.ReactElement => {
   const color = useThemeColor({}, "text");
 
   const [searchText, setSearchText] = useState<string>("");
-  const [sortMode, setSortMode] = useState<SortMode>("Alphabetical");
+  const [sortMode, setSortMode] = useState<SortMode>(SORT_MODES[0]);
   const [showingSortModal, setShowingSortModal] = useState<boolean>(false);
 
   const createFilter =
@@ -85,6 +86,13 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
     return af ? -1 : 1;
   });
 
+  const sortIcons = new Map<
+    SortMode,
+    Pick<MaterialCommunityIcons["props"], "name">
+  >();
+  sortIcons.set("Alphabetical", { name: "sort-alphabetical-ascending" });
+  sortIcons.set("Fronting", { name: "steering" });
+
   const createComparator = (
     sortMode: SortMode
   ): ((a: SystemMember, b: SystemMember) => number) => {
@@ -110,6 +118,8 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
   return (
     <View style={styles.filterView}>
       <SelectModal<SortMode>
+        title="Sort by ..."
+        alignment="top-right"
         visible={showingSortModal}
         onClose={(choice) => {
           setShowingSortModal(false);
@@ -117,24 +127,16 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
             setSortMode(choice);
           }
         }}
-        options={[
-          {
-            value: "Alphabetical",
-            icon: (props: { color: string }) => (
-              <MaterialCommunityIcons
-                size={20}
-                name="sort-alphabetical-ascending"
-                {...props}
-              />
-            ),
-          },
-          {
-            value: "Fronting",
-            icon: (props: { color: string }) => (
-              <MaterialCommunityIcons size={20} name="steering" {...props} />
-            ),
-          },
-        ]}
+        options={SORT_MODES.map((mode: SortMode) => ({
+          value: mode,
+          icon: (props: { color: string }) => (
+            <MaterialCommunityIcons
+              size={20}
+              name={sortIcons.get(mode)!.name}
+              {...props}
+            />
+          ),
+        }))}
       />
       <TextInput
         style={styles.search}
@@ -143,7 +145,11 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
       />
       <IconButton
         icon={(props) => (
-          <MaterialCommunityIcons size={26} name="sort" {...props} />
+          <MaterialCommunityIcons
+            size={26}
+            name={sortIcons.get(sortMode)!.name}
+            {...props}
+          />
         )}
         onPress={() => setShowingSortModal(true)}
       />

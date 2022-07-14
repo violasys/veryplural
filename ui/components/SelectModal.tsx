@@ -6,9 +6,9 @@ import {
   StyleSheet,
   TextStyle,
   View,
+  ViewStyle,
 } from "react-native";
 import Card from "./Card";
-import Ruler from "./Ruler";
 import { Text, useThemeColor } from "./Themed";
 
 export default function SelectModal<T>(props: Props<T>) {
@@ -19,6 +19,8 @@ export default function SelectModal<T>(props: Props<T>) {
     },
     "text"
   );
+
+  const alignment = props.alignment || DEFAULT_ALIGNMENT;
 
   const optionLabel = (option: Option<T>): string => {
     if (typeof option.label !== "undefined") {
@@ -37,6 +39,17 @@ export default function SelectModal<T>(props: Props<T>) {
     return `${option.value}`;
   };
 
+  const style: ViewStyle[] = [
+    {
+      flex: 1,
+      display: "flex",
+      flexDirection: "column",
+      backgroundColor: "rgba(0,0,0,0.3)",
+    },
+  ];
+
+  style.push(ALIGNMENT_STYLE.get(alignment)!);
+
   return (
     <Modal
       visible={props.visible}
@@ -44,27 +57,17 @@ export default function SelectModal<T>(props: Props<T>) {
       animationType="fade"
       onRequestClose={() => props.onClose()}
     >
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "stretch",
-          backgroundColor: "rgba(0,0,0,0.3)",
-        }}
-      >
+      <View style={style}>
         <Card style={styles.container}>
+          {props.title && <Text style={styles.title}>{props.title}</Text>}
           <ScrollView style={{ flex: 1 }}>
             {props.options.map((option) => (
-              <>
-                <SelectOption
-                  key={optionKey(option)}
-                  label={optionLabel(option)}
-                  onSelect={() => props.onClose(option.value)}
-                  icon={option.icon}
-                />
-                <Ruler />
-              </>
+              <SelectOption
+                key={optionKey(option)}
+                label={optionLabel(option)}
+                onSelect={() => props.onClose(option.value)}
+                icon={option.icon}
+              />
             ))}
           </ScrollView>
           <SelectOption
@@ -80,6 +83,61 @@ export default function SelectModal<T>(props: Props<T>) {
   );
 }
 
+export type Alignment =
+  | "center"
+  | "top-right"
+  | "top"
+  | "top-left"
+  | "bottom"
+  | "left";
+const DEFAULT_ALIGNMENT: Alignment = "center";
+
+const ALIGNMENT_STYLE: Map<Alignment, ViewStyle> = (() => {
+  const map = new Map<Alignment, ViewStyle>();
+
+  map.set("center", {
+    padding: 50,
+    justifyContent: "center",
+    alignItems: "stretch",
+  });
+
+  map.set("top-right", {
+    padding: 10,
+    justifyContent: "flex-start",
+    alignItems: "flex-end",
+  });
+
+  map.set("top-left", {
+    padding: 10,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+  });
+
+  map.set("top", {
+    padding: 10,
+    justifyContent: "flex-start",
+    alignItems: "stretch",
+  });
+
+  map.set("left", {
+    padding: 0,
+    marginLeft: -20,
+    marginTop: -20,
+    marginBottom: -20,
+    flexDirection: "row",
+    alignItems: "stretch",
+  });
+
+  map.set("bottom", {
+    padding: 0,
+    marginBottom: -20,
+    justifyContent: "flex-end",
+    alignItems: "stretch",
+  });
+
+  return map;
+})();
+
 export interface Option<T> {
   label?: string;
   key?: string;
@@ -88,6 +146,8 @@ export interface Option<T> {
 }
 
 interface Props<T> {
+  alignment?: Alignment;
+  title?: string;
   visible: boolean;
   onClose: (selection?: T) => void;
   options: Option<T>[];
@@ -119,13 +179,15 @@ const SelectOption = (props: SelectOptionProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 50,
-    borderRadius: 20,
     shadowRadius: 4,
     shadowOffset: {
       width: 0,
       height: 2,
     },
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "normal",
   },
   option: {
     display: "flex",

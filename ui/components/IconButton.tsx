@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
+import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { useThemeColor } from "./Themed";
 
 export default function IconButton(props: IconButtonProps): React.ReactElement {
@@ -28,6 +28,9 @@ export default function IconButton(props: IconButtonProps): React.ReactElement {
     >
       <View style={style}>
         <Icon color={color} />
+        {props.text && (
+          <Text style={[styles.text, { color }]}>{props.text}</Text>
+        )}
       </View>
     </Pressable>
   );
@@ -36,6 +39,7 @@ export default function IconButton(props: IconButtonProps): React.ReactElement {
 export interface IconButtonProps {
   onPress?: () => void;
   selected?: boolean;
+  text?: string;
   icon: (props: { color: string }) => React.ReactElement;
   offIcon?: (props: { color: string }) => React.ReactElement;
 }
@@ -50,11 +54,16 @@ const getColorType = (selected?: boolean) => {
 const styles = StyleSheet.create({
   container: {
     display: "flex",
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     padding: 8,
   },
   pressed: {
     opacity: 0.6,
+  },
+  text: {
+    marginLeft: 5,
+    fontSize: 20,
   },
 });

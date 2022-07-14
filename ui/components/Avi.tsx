@@ -13,7 +13,7 @@ export default function Avi(props: AviProps) {
       // borderTopWidth: 0,
       // borderRightWidth: 0,
       shadowColor: props.color,
-      shadowRadius: 1,
+      shadowRadius: 0,
       shadowOffset: {
         width: -4,
         height: 4,
