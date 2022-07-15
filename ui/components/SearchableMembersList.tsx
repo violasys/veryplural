@@ -62,15 +62,13 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
     (searchText: string): Predicate<SystemMember> =>
     (member) => {
       const fields = [
-        member.id,
         member.name,
         member.displayname || "",
-        member.description || "",
         member.pronouns || "",
       ];
       (member.roles || []).forEach((role) => fields.push(role));
       (member.tags || []).forEach((tag) => fields.push(tag));
-      return fields.some((f) => f.toLocaleLowerCase().indexOf(searchText) >= 0);
+      return fields.some((f) => f.toLocaleLowerCase().indexOf(searchText) == 0);
     };
 
   const comparators = new Map<SortMode, Comparator<SystemMember>>();

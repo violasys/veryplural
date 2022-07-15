@@ -62,7 +62,8 @@ export default function MembersScreen({
       name: "Lilah",
       avatar: "https://violasys.github.io/assets/images/pfp-gwen-lilah.png",
       pronouns: "She/Her",
-      roles: ["co-host", "amnesian protector"],
+      roles: ["host", "amnesian protector"],
+      tags: ["age-slider"],
       color: "#aa11aa",
     },
     {
@@ -70,7 +71,7 @@ export default function MembersScreen({
       name: "Demi",
       avatar: "https://violasys.github.io/assets/images/pfp-gwen-demi.png",
       pronouns: "She/They",
-      roles: ["co-host", "worker", "protector"],
+      roles: ["host", "worker", "protector"],
       color: "#aa11aa",
     },
     {
