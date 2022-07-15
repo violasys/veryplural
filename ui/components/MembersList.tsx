@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { FlatList, Pressable, useWindowDimensions, View } from "react-native";
 import { SystemMember } from "../types";
 import { getOrientation } from "../util/orientation";
 import MemberCard from "./MemberCard";
@@ -18,6 +18,7 @@ export default function MembersList(
   const [pressedMember, setPressedMember] = useState<string>("");
   const [expanded, setExpanded] = useState<string>("");
   const orientation = getOrientation();
+  const expandAll = props.showAllDetails || orientation === "landscape";
   const fronting = new Set<string>();
   props.frontingIds.forEach((id) => fronting.add(id));
 
@@ -46,7 +47,7 @@ export default function MembersList(
           member={item}
           showFronting={props.showFronting}
           isFronting={isFronting}
-          showDetails={props.showAllDetails || expanded === item.id}
+          showDetails={expandAll || expanded === item.id}
           setFronting={
             props.setFronting
               ? (f) => props.setFronting!(item.id, f)
@@ -58,17 +59,20 @@ export default function MembersList(
   };
 
   const members: (SystemMember | 0)[] = [...props.members];
-  if (orientation === "landscape" && members.length % 2 === 1) {
+  const windowWidth = useWindowDimensions().width;
+  const columns =
+    orientation === "portrait" ? 1 : 1 + Math.floor(windowWidth / 600);
+  while (members.length % columns > 0) {
     members.push(0);
   }
 
   return (
     <FlatList
-      key={`members-${orientation}`}
+      key={`members-${columns}`}
       data={members}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
-      numColumns={orientation === "portrait" ? 1 : 2}
+      numColumns={columns}
       extraData={[pressedMember, expanded]}
     />
   );

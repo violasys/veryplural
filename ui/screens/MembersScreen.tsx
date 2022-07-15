@@ -81,14 +81,12 @@ export default function MembersScreen({
       color: "#116611",
     },
   ];
-
   const [fronting, setFronting] = useState(["demi", "gwen"]);
 
   return (
     <BgView style={styles.container}>
       <SearchableMembersList
         members={members}
-        showAllDetails={true}
         frontingIds={fronting}
         showFronting={true}
         setFronting={(id: string, f: boolean) => {
