@@ -1,22 +1,28 @@
-import { Appearance, StyleSheet, View } from "react-native";
+import { Appearance, StyleSheet, View, ViewStyle } from "react-native";
 
 import { Text } from "./Themed";
 import { SystemMember } from "../types";
-import Avi from "./Avi";
+import Avi, { Size } from "./Avi";
 import Card from "./Card";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import IconButton from "./IconButton";
 import Spacer from "./Spacer";
 import Ruler from "./Ruler";
 import Badge from "./Badge";
+import { impossible } from "../util/typeutil";
 
 export default function MemberCard(props: MemberCardProps) {
   const showFrontingControl =
     props.showFronting && (props.setFronting || props.isFronting);
+  const variant = (!props.showDetails && props.variant) || "default";
   return (
-    <Card style={styles.card}>
+    <Card style={[styles.card, getVariantStyle(variant)]}>
       <View style={styles.main}>
-        <Avi uri={props.member.avatar} color={props.member.color} />
+        <Avi
+          size={getAviSize(variant)}
+          uri={props.member.avatar}
+          color={props.member.color}
+        />
         <View style={[styles.namebox]}>
           <Text style={styles.name}>
             {props.member.displayname || props.member.name}
@@ -60,6 +66,22 @@ export default function MemberCard(props: MemberCardProps) {
   );
 }
 
+const getVariantStyle = (v: MemberCardVariant): ViewStyle => {
+  if (v === "default") {
+    return styles.cardDefault;
+  }
+  if (v === "slim") {
+    return styles.cardSlim;
+  }
+  impossible(v);
+};
+
+const getAviSize = (v: MemberCardVariant): Size => {
+  if (v === "default") return "medium";
+  if (v === "slim") return "slim";
+  impossible(v);
+};
+
 function Details(props: MemberCardProps): React.ReactElement {
   const tags: string[] = [
     ...(props.member.roles || []),
@@ -79,10 +101,13 @@ function Details(props: MemberCardProps): React.ReactElement {
   );
 }
 
+export type MemberCardVariant = "default" | "slim";
+
 export interface MemberCardProps {
   member: SystemMember;
   showDetails?: boolean;
   showFronting?: boolean;
+  variant?: MemberCardVariant;
   isFronting?: boolean;
   setFronting?: (fronting: boolean) => void;
 }
@@ -93,6 +118,13 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignItems: "stretch",
+  },
+  cardDefault: {},
+  cardSlim: {
+    paddingTop: 2,
+    paddingBottom: 2,
+    marginTop: 2,
+    marginBottom: 2,
   },
   details: {
     flex: 1,

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Comparator, Predicate, SystemMember } from "../types";
 import IconButton from "./IconButton";
+import { MemberCardVariant } from "./MemberCard";
 import MembersList, {
   MemberListProps as MembersListProps,
 } from "./MembersList";
@@ -28,13 +29,15 @@ export default function SearchableMembersList(
     setMembers(memberFilter.apply(allMembers));
   }, [memberFilter]);
 
+  const [variant, _setVariant] = useState<MemberCardVariant>("slim");
+
   return (
     <View style={styles.container}>
       <FilterControls
         setFilter={setMemberFilter}
         frontingIds={otherProps.frontingIds}
       />
-      <MembersList members={members} {...otherProps} />
+      <MembersList members={members} variant={variant} {...otherProps} />
     </View>
   );
 }

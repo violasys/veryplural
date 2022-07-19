@@ -1,4 +1,5 @@
 import { Image, StyleSheet, View, ViewStyle } from "react-native";
+import { impossible } from "../util/typeutil";
 
 export default function Avi(props: AviProps) {
   const placeholder = require("../assets/images/avi.png");
@@ -34,7 +35,7 @@ export default function Avi(props: AviProps) {
   );
 }
 
-export type Size = "small" | "medium" | "large";
+export type Size = "small" | "slim" | "medium" | "large";
 
 export interface AviProps {
   uri?: string;
@@ -45,9 +46,10 @@ export interface AviProps {
 const interpretSize = (size: Size | undefined): number => {
   if (typeof size === "undefined") return interpretSize("medium");
   if (size === "small") return 24;
+  if (size === "slim") return 50;
   if (size === "medium") return 64;
   if (size === "large") return 512;
-  throw Error(`Unknown size ${size}`);
+  impossible(size);
 };
 
 const styles = StyleSheet.create({
