@@ -52,18 +52,16 @@ interface FilterControlsProps {
 }
 
 type SortMode = "Alphabetical" | "Fronting";
-const SORT_MODES: SortMode[] = ["Fronting", "Alphabetical"];
+const SORT_MODES: SortMode[] = ["Alphabetical", "Fronting"];
 
 const FilterControls = (props: FilterControlsProps): React.ReactElement => {
-  const color = useThemeColor({}, "text");
-
   const [searchText, setSearchText] = useState<string>("");
   const [sortMode, setSortMode] = useState<SortMode>(SORT_MODES[0]);
   const [showingSortModal, setShowingSortModal] = useState<boolean>(false);
 
   const createFilter =
     (searchText: string): Predicate<SystemMember> =>
-    (member) => {
+    (member: SystemMember) => {
       const fields = [
         member.name,
         member.displayname || "",
@@ -154,10 +152,12 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
         )}
         onPress={() => setShowingSortModal(true)}
       />
-      <IconButton
-        icon={(props) => <Ionicons size={26} name="grid" {...props} />}
-        selected={true}
-      />
+      {!true && (
+        <IconButton
+          icon={(props) => <Ionicons size={26} name="grid" {...props} />}
+          selected={true}
+        />
+      )}
     </View>
   );
 };

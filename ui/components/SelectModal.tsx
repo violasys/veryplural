@@ -54,7 +54,7 @@ export default function SelectModal<T>(props: Props<T>) {
     <Modal
       visible={props.visible}
       transparent={true}
-      animationType="fade"
+      animationType={props.animationType || "fade"}
       onRequestClose={() => props.onClose()}
     >
       <View style={style}>
@@ -151,6 +151,7 @@ interface Props<T> {
   visible: boolean;
   onClose: (selection?: T) => void;
   options: Option<T>[];
+  animationType?: "none" | "slide" | "fade";
 }
 
 interface SelectOptionProps {

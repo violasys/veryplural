@@ -49,6 +49,11 @@ export interface SystemMember {
   tags?: string[];
 }
 
+export interface FrontChange {
+  memberId: string;
+  change: "add" | "remove" | "set";
+}
+
 export interface EntityLink {
   source: string;
   id: string;

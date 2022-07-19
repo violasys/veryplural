@@ -1,7 +1,7 @@
 import { Appearance, StyleSheet, View, ViewStyle } from "react-native";
 
 import { Text } from "./Themed";
-import { SystemMember } from "../types";
+import { FrontChange, SystemMember } from "../types";
 import Avi, { Size } from "./Avi";
 import Card from "./Card";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -10,11 +10,15 @@ import Spacer from "./Spacer";
 import Ruler from "./Ruler";
 import Badge from "./Badge";
 import { impossible } from "../util/typeutil";
+import FrontIcon, { AddToFrontIcon } from "./FrontIcon";
+import SelectModal from "./SelectModal";
+import { useState } from "react";
 
 export default function MemberCard(props: MemberCardProps) {
   const showFrontingControl =
-    props.showFronting && (props.setFronting || props.isFronting);
+    props.showFronting && (props.changeFront || props.isFronting);
   const variant = (!props.showDetails && props.variant) || "default";
+  const [showingFrontChange, setShowingFrontChange] = useState<boolean>(false);
   return (
     <Card style={[styles.card, getVariantStyle(variant)]}>
       <View style={styles.main}>
@@ -36,25 +40,36 @@ export default function MemberCard(props: MemberCardProps) {
           {showFrontingControl && (
             <IconButton
               icon={(props) => (
-                <MaterialCommunityIcons name="steering" size={32} {...props} />
+                <FrontIcon fronting={true} size={32} {...props} />
               )}
               offIcon={(props) => (
-                <MaterialCommunityIcons
-                  name="steering-off"
-                  size={32}
-                  {...props}
-                />
+                <FrontIcon fronting={false} size={32} {...props} />
               )}
               selected={props.isFronting}
               onPress={() => {
-                if (typeof props.setFronting === "undefined") {
+                if (typeof props.changeFront === "undefined") {
                   return;
                 }
-                props.setFronting(!props.isFronting);
+                if (!props.isFronting) {
+                  setShowingFrontChange(true);
+                  return;
+                }
+                props.changeFront({
+                  memberId: props.member.id,
+                  change: props.isFronting ? "remove" : "add",
+                });
               }}
             />
           )}
         </View>
+        {props.changeFront && (
+          <FrontChangeModal
+            member={props.member}
+            visible={showingFrontChange}
+            setVisible={setShowingFrontChange}
+            changeFront={props.changeFront}
+          />
+        )}
       </View>
       {props.showDetails && (
         <>
@@ -109,7 +124,45 @@ export interface MemberCardProps {
   showFronting?: boolean;
   variant?: MemberCardVariant;
   isFronting?: boolean;
-  setFronting?: (fronting: boolean) => void;
+  changeFront?: (change: FrontChange) => void;
+}
+
+interface FrontChangeModalProps
+  extends Pick<MemberCardProps, "member" | "isFronting"> {
+  visible: boolean;
+  setVisible: (visible: boolean) => void;
+  changeFront: (change: FrontChange) => void;
+}
+
+function FrontChangeModal(props: FrontChangeModalProps): React.ReactElement {
+  return (
+    <SelectModal<"add" | "set" | "remove">
+      visible={props.visible}
+      onClose={(change) => {
+        if (typeof change !== "undefined") {
+          props.changeFront({
+            change,
+            memberId: props.member.id,
+          });
+        }
+        props.setVisible(false);
+      }}
+      options={[
+        {
+          value: "add",
+          label: "add to front",
+          icon: (props) => <AddToFrontIcon size={24} {...props} />,
+        },
+        {
+          value: "set",
+          label: "set as front",
+          icon: (props) => <FrontIcon fronting={true} size={24} {...props} />,
+        },
+      ]}
+      animationType="none"
+      title={props.member.name}
+    />
+  );
 }
 
 const styles = StyleSheet.create({

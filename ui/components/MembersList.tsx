@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FlatList, Pressable, useWindowDimensions, View } from "react-native";
-import { SystemMember } from "../types";
+import { FrontChange, SystemMember } from "../types";
 import { getOrientation } from "../util/orientation";
 import MemberCard, { MemberCardVariant } from "./MemberCard";
 
@@ -9,7 +9,7 @@ export interface MemberListProps {
   showFronting: boolean;
   frontingIds: string[];
   showAllDetails?: boolean;
-  setFronting?: (id: string, fronting: boolean) => void;
+  changeFront?: (change: FrontChange) => void;
   variant?: MemberCardVariant;
 }
 
@@ -50,11 +50,7 @@ export default function MembersList(
           showFronting={props.showFronting}
           isFronting={isFronting}
           showDetails={expandAll || expanded === item.id}
-          setFronting={
-            props.setFronting
-              ? (f) => props.setFronting!(item.id, f)
-              : undefined
-          }
+          changeFront={props.changeFront}
         />
       </Pressable>
     );

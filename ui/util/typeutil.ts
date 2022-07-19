@@ -1,3 +1,3 @@
-export function impossible(x: never): never {
+export function impossible(_: never): never {
   throw new Error("Unreachable");
 }

@@ -3,7 +3,8 @@ import { StyleSheet } from "react-native";
 import SearchableMembersList from "../components/SearchableMembersList";
 
 import { BgView } from "../components/Themed";
-import { RootTabScreenProps, SystemMember } from "../types";
+import { FrontChange, RootTabScreenProps, SystemMember } from "../types";
+import { impossible } from "../util/typeutil";
 
 export default function MembersScreen({
   navigation,
@@ -90,12 +91,20 @@ export default function MembersScreen({
         members={members}
         frontingIds={fronting}
         showFronting={true}
-        setFronting={(id: string, f: boolean) => {
-          if (f) {
-            setFronting([id, ...fronting]);
-          } else {
-            setFronting(fronting.filter((i) => i !== id));
+        changeFront={({ memberId, change }: FrontChange) => {
+          if (change === "add") {
+            setFronting([memberId, ...fronting]);
+            return;
           }
+          if (change === "remove") {
+            setFronting(fronting.filter((x) => x !== memberId));
+            return;
+          }
+          if (change === "set") {
+            setFronting([memberId]);
+            return;
+          }
+          impossible(change);
         }}
       />
     </BgView>
