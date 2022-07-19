@@ -4,7 +4,6 @@ import { Text } from "./Themed";
 import { FrontChange, SystemMember } from "../types";
 import Avi, { Size } from "./Avi";
 import Card from "./Card";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import IconButton from "./IconButton";
 import Spacer from "./Spacer";
 import Ruler from "./Ruler";
@@ -15,8 +14,6 @@ import SelectModal from "./SelectModal";
 import { useState } from "react";
 
 export default function MemberCard(props: MemberCardProps) {
-  const showFrontingControl =
-    props.showFronting && (props.changeFront || props.isFronting);
   const variant = (!props.showDetails && props.variant) || "default";
   const [showingFrontChange, setShowingFrontChange] = useState<boolean>(false);
   return (
@@ -37,7 +34,15 @@ export default function MemberCard(props: MemberCardProps) {
         </View>
         <Spacer />
         <View style={styles.controls}>
-          {showFrontingControl && (
+          {!props.editingFront && props.isFronting && (
+            <IconButton
+              icon={(props) => (
+                <FrontIcon fronting={true} size={32} {...props} />
+              )}
+              selected={props.isFronting}
+            />
+          )}
+          {props.editingFront && (
             <IconButton
               icon={(props) => (
                 <FrontIcon fronting={true} size={32} {...props} />
@@ -121,8 +126,8 @@ export type MemberCardVariant = "default" | "slim";
 export interface MemberCardProps {
   member: SystemMember;
   showDetails?: boolean;
-  showFronting?: boolean;
   variant?: MemberCardVariant;
+  editingFront?: boolean;
   isFronting?: boolean;
   changeFront?: (change: FrontChange) => void;
 }

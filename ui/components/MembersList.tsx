@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { FlatList, Pressable, useWindowDimensions, View } from "react-native";
-import { FrontChange, SystemMember } from "../types";
+import { FrontChange, FrontingState, SystemMember } from "../types";
 import { getOrientation } from "../util/orientation";
 import MemberCard, { MemberCardVariant } from "./MemberCard";
 
 export interface MemberListProps {
   members: SystemMember[];
-  showFronting: boolean;
-  frontingIds: string[];
+  frontingState?: FrontingState;
+  editingFront?: boolean;
   showAllDetails?: boolean;
-  changeFront?: (change: FrontChange) => void;
   variant?: MemberCardVariant;
 }
 
@@ -20,8 +19,7 @@ export default function MembersList(
   const [expanded, setExpanded] = useState<string>("");
   const orientation = getOrientation();
   const expandAll = props.showAllDetails || orientation === "landscape";
-  const fronting = new Set<string>();
-  props.frontingIds.forEach((id) => fronting.add(id));
+  const fronting = props.frontingState?.frontingIds || new Set<string>();
 
   const renderItem = ({ item }: { item: SystemMember | 0 }) => {
     if (item === 0) {
@@ -47,10 +45,11 @@ export default function MembersList(
         <MemberCard
           member={item}
           variant={props.variant}
-          showFronting={props.showFronting}
           isFronting={isFronting}
           showDetails={expandAll || expanded === item.id}
-          changeFront={props.changeFront}
+          changeFront={(change) => {
+            props.frontingState?.changeFront([change]);
+          }}
         />
       </Pressable>
     );

@@ -83,28 +83,27 @@ export default function MembersScreen({
       color: "#116611",
     },
   ];
-  const [fronting, setFronting] = useState(["demi", "gwen"]);
+  const [fronting, setFronting] = useState(new Set<string>(["demi", "gwen"]));
 
   return (
     <BgView style={styles.container}>
       <SearchableMembersList
         members={members}
-        frontingIds={fronting}
-        showFronting={true}
-        changeFront={({ memberId, change }: FrontChange) => {
-          if (change === "add") {
-            setFronting([memberId, ...fronting]);
-            return;
-          }
-          if (change === "remove") {
-            setFronting(fronting.filter((x) => x !== memberId));
-            return;
-          }
-          if (change === "set") {
-            setFronting([memberId]);
-            return;
-          }
-          impossible(change);
+        frontingState={{
+          frontingIds: fronting,
+          changeFront: (changes) => {
+            const set = new Set<string>(fronting);
+            for (const { memberId, change } of changes) {
+              if (change === "add") {
+                set.add(memberId);
+              } else if (change === "remove") {
+                set.delete(memberId);
+              } else {
+                impossible(change);
+              }
+            }
+            setFronting(set);
+          },
         }}
       />
     </BgView>

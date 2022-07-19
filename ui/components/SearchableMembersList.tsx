@@ -6,6 +6,7 @@ import {
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Comparator, Predicate, SystemMember } from "../types";
+import FrontIcon from "./FrontIcon";
 import IconButton from "./IconButton";
 import { MemberCardVariant } from "./MemberCard";
 import MembersList, {
@@ -31,12 +32,11 @@ export default function SearchableMembersList(
 
   const [variant, _setVariant] = useState<MemberCardVariant>("slim");
 
+  const frontingIds = props.frontingState?.frontingIds || new Set<string>();
+
   return (
     <View style={styles.container}>
-      <FilterControls
-        setFilter={setMemberFilter}
-        frontingIds={otherProps.frontingIds}
-      />
+      <FilterControls setFilter={setMemberFilter} frontingIds={frontingIds} />
       <MembersList members={members} variant={variant} {...otherProps} />
     </View>
   );
@@ -47,7 +47,7 @@ interface MembersFilter {
 }
 
 interface FilterControlsProps {
-  frontingIds: string[];
+  frontingIds: Set<string>;
   setFilter: (filter: MembersFilter) => void;
 }
 
@@ -58,6 +58,7 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
   const [searchText, setSearchText] = useState<string>("");
   const [sortMode, setSortMode] = useState<SortMode>(SORT_MODES[0]);
   const [showingSortModal, setShowingSortModal] = useState<boolean>(false);
+  const [editingFront, setEditingFront] = useState<boolean>(false);
 
   const createFilter =
     (searchText: string): Predicate<SystemMember> =>
@@ -151,6 +152,12 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
           />
         )}
         onPress={() => setShowingSortModal(true)}
+      />
+      <IconButton
+        icon={(props) => <FrontIcon size={26} fronting={true} {...props} />}
+        selected={editingFront || undefined}
+        onPress={() => setEditingFront(!editingFront)}
+        text={editingFront ? "Editing Front" : "Edit Front"}
       />
       {!true && (
         <IconButton

@@ -49,9 +49,14 @@ export interface SystemMember {
   tags?: string[];
 }
 
+export interface FrontingState {
+  frontingIds: Set<string>;
+  changeFront: (changes: FrontChange[]) => void;
+}
+
 export interface FrontChange {
   memberId: string;
-  change: "add" | "remove" | "set";
+  change: "add" | "remove";
 }
 
 export interface EntityLink {
