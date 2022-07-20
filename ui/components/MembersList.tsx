@@ -8,8 +8,10 @@ export interface MemberListProps {
   members: SystemMember[];
   frontingState?: FrontingState;
   editingFront?: boolean;
+  modifiedFronts?: Set<string>;
   showAllDetails?: boolean;
   variant?: MemberCardVariant;
+  mutable?: boolean;
 }
 
 export default function MembersList(
@@ -46,10 +48,12 @@ export default function MembersList(
           member={item}
           variant={props.variant}
           isFronting={isFronting}
+          modifiedFront={props.modifiedFronts?.has(item.id)}
           showDetails={expandAll || expanded === item.id}
           changeFront={(change) => {
             props.frontingState?.changeFront([change]);
           }}
+          editingFront={props.editingFront}
         />
       </Pressable>
     );

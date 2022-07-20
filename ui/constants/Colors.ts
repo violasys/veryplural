@@ -10,6 +10,10 @@ export default {
     tint: tintColorLight,
     tabIconDefault: "#ccc",
     tabIconSelected: tintColorLight,
+    primary: "#42a5f5",
+    error: "#ef5350",
+    success: "#4caf50",
+    warning: "#ff9800",
   },
   dark: {
     text: "#e0e0e0",
@@ -19,5 +23,9 @@ export default {
     tint: tintColorDark,
     tabIconDefault: "#ccc",
     tabIconSelected: tintColorDark,
+    primary: "#1565c0",
+    error: "#c62828",
+    success: "#1b5e20",
+    warning: "#e65100",
   },
 };

@@ -4,8 +4,16 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { Comparator, Predicate, SystemMember } from "../types";
+import { Button, StyleSheet, View } from "react-native";
+import {
+  applyFrontChange,
+  Comparator,
+  FrontChange,
+  FrontingState,
+  Predicate,
+  simplifyFrontChange,
+  SystemMember,
+} from "../types";
 import FrontIcon from "./FrontIcon";
 import IconButton from "./IconButton";
 import { MemberCardVariant } from "./MemberCard";
@@ -20,7 +28,7 @@ interface SearchableMembersListProps extends MembersListProps {}
 export default function SearchableMembersList(
   props: SearchableMembersListProps
 ) {
-  const { members: allMembers, ...otherProps } = props;
+  const { members: allMembers, frontingState, ...otherProps } = props;
   const [members, setMembers] = useState<SystemMember[]>([]);
   const [memberFilter, setMemberFilter] = useState<MembersFilter>({
     apply: (x) => x,
@@ -30,17 +38,142 @@ export default function SearchableMembersList(
     setMembers(memberFilter.apply(allMembers));
   }, [memberFilter]);
 
+  const [editingFront, setEditingFront] = useState<boolean>(false);
+  const [frontEdits, setFrontEdits] = useState<FrontChange[]>([]);
   const [variant, _setVariant] = useState<MemberCardVariant>("slim");
 
   const frontingIds = props.frontingState?.frontingIds || new Set<string>();
 
+  const modifiedFrontingState: FrontingState = {
+    frontingIds: (() => {
+      const set = new Set(frontingIds);
+      frontEdits.forEach((e) => applyFrontChange(set, e));
+      return set;
+    })(),
+    changeFront: (changes: FrontChange[]) => {
+      setFrontEdits(simplifyFrontChange([...frontEdits, ...changes]));
+    },
+  };
+
+  const modifiedFronts = new Set<string>();
+  for (const edit of frontEdits) {
+    modifiedFronts.add(edit.memberId);
+  }
+
+  const commitFrontChanges = () => {
+    setEditingFront(false);
+    if (frontEdits.length > 0) {
+      props.frontingState?.changeFront(frontEdits);
+      setFrontEdits([]);
+    }
+  };
+
+  const clearFront = () => {
+    const changes: FrontChange[] = [];
+    for (const memberId of frontingIds) {
+      changes.push({
+        memberId,
+        change: "remove",
+      });
+    }
+    setFrontEdits(changes);
+  };
+
   return (
     <View style={styles.container}>
-      <FilterControls setFilter={setMemberFilter} frontingIds={frontingIds} />
-      <MembersList members={members} variant={variant} {...otherProps} />
+      <FilterControls
+        setFilter={setMemberFilter}
+        frontingIds={frontingIds}
+        editingFront={editingFront}
+        setEditingFront={setEditingFront}
+        mutable={props.mutable}
+      />
+      {editingFront && (
+        <FrontControls
+          commitFrontChanges={commitFrontChanges}
+          cancelFrontChanges={() => {
+            setEditingFront(false);
+            setFrontEdits([]);
+          }}
+        />
+      )}
+      <MembersList
+        members={members}
+        variant={variant}
+        editingFront={editingFront}
+        frontingState={modifiedFrontingState}
+        modifiedFronts={modifiedFronts}
+        {...otherProps}
+      />
+      {editingFront && <ClearFrontControls clearFront={clearFront} />}
     </View>
   );
 }
+
+interface ClearFrontProps {
+  clearFront: () => void;
+}
+
+const ClearFrontControls = (props: ClearFrontProps): React.ReactElement => {
+  const clearColor = useThemeColor({}, "primary");
+  return (
+    <View
+      style={{
+        marginTop: 8,
+        flexDirection: "row",
+      }}
+    >
+      <View style={{ flex: 1 }}>
+        <Button
+          title="clear front"
+          onPress={props.clearFront}
+          color={clearColor}
+        />
+      </View>
+    </View>
+  );
+};
+
+interface FrontControlsProps {
+  cancelFrontChanges: () => void;
+  commitFrontChanges: () => void;
+}
+
+const FrontControls = (props: FrontControlsProps): React.ReactElement => {
+  const secondaryColor = useThemeColor({}, "tabIconDefault");
+  const primaryColor = useThemeColor({}, "primary");
+  return (
+    <View
+      style={{
+        flexDirection: "column",
+        alignContent: "stretch",
+        alignItems: "stretch",
+        padding: 8,
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+        }}
+      >
+        <View style={{ flex: 1, marginRight: 4 }}>
+          <Button
+            title="cancel"
+            onPress={props.cancelFrontChanges}
+            color={secondaryColor}
+          />
+        </View>
+        <View style={{ flex: 1, marginLeft: 4 }}>
+          <Button
+            title="save front changes"
+            onPress={props.commitFrontChanges}
+            color={primaryColor}
+          />
+        </View>
+      </View>
+    </View>
+  );
+};
 
 interface MembersFilter {
   apply: (members: SystemMember[]) => SystemMember[];
@@ -49,6 +182,9 @@ interface MembersFilter {
 interface FilterControlsProps {
   frontingIds: Set<string>;
   setFilter: (filter: MembersFilter) => void;
+  editingFront: boolean;
+  setEditingFront: (editing: boolean) => void;
+  mutable?: boolean;
 }
 
 type SortMode = "Alphabetical" | "Fronting";
@@ -58,7 +194,7 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
   const [searchText, setSearchText] = useState<string>("");
   const [sortMode, setSortMode] = useState<SortMode>(SORT_MODES[0]);
   const [showingSortModal, setShowingSortModal] = useState<boolean>(false);
-  const [editingFront, setEditingFront] = useState<boolean>(false);
+  const { editingFront, setEditingFront } = props;
 
   const createFilter =
     (searchText: string): Predicate<SystemMember> =>
@@ -78,8 +214,8 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
     (a.displayname || a.name).localeCompare(b.displayname || b.name)
   );
   comparators.set("Fronting", (a, b) => {
-    const af = props.frontingIds.some((id) => id === a.id);
-    const bf = props.frontingIds.some((id) => id === b.id);
+    const af = props.frontingIds.has(a.id);
+    const bf = props.frontingIds.has(b.id);
     if (af === bf) {
       return comparators.get("Alphabetical")!(a, b);
     }
@@ -153,12 +289,17 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
         )}
         onPress={() => setShowingSortModal(true)}
       />
-      <IconButton
-        icon={(props) => <FrontIcon size={26} fronting={true} {...props} />}
-        selected={editingFront || undefined}
-        onPress={() => setEditingFront(!editingFront)}
-        text={editingFront ? "Editing Front" : "Edit Front"}
-      />
+      {!editingFront && props.mutable && (
+        <View
+          style={{
+            justifyContent: "center",
+            alignContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Button title="edit front" onPress={() => setEditingFront(true)} />
+        </View>
+      )}
       {!true && (
         <IconButton
           icon={(props) => <Ionicons size={26} name="grid" {...props} />}

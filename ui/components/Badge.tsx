@@ -13,12 +13,10 @@ export default function Badge(props: Props): React.ReactElement {
 
 interface Props {
   label: string;
-  color?: BadgeColor;
+  color?: string;
 }
 
-export type BadgeColor = "default" | "subtle";
-
-const getColorStyle = (c: BadgeColor): TextStyle => {
+const getColorStyle = (c: string): TextStyle => {
   if (c === "default") {
     return {
       color: "rgb(26, 32, 44)",
@@ -31,7 +29,10 @@ const getColorStyle = (c: BadgeColor): TextStyle => {
       backgroundColor: "rgba(237, 242, 247, 0.8)",
     };
   }
-  throw Error(`Unknown badge color ${c}`);
+  return {
+    color: "rgb(26, 32, 44)",
+    backgroundColor: c,
+  };
 };
 
 const styles = StyleSheet.create({

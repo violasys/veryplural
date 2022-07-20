@@ -89,6 +89,7 @@ export default function MembersScreen({
     <BgView style={styles.container}>
       <SearchableMembersList
         members={members}
+        mutable={true}
         frontingState={{
           frontingIds: fronting,
           changeFront: (changes) => {

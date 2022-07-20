@@ -9,6 +9,7 @@ import {
   NavigatorScreenParams,
 } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { impossible } from "./util/typeutil";
 
 declare global {
   namespace ReactNavigation {
@@ -54,10 +55,47 @@ export interface FrontingState {
   changeFront: (changes: FrontChange[]) => void;
 }
 
+type ChangeType = "add" | "remove";
+
 export interface FrontChange {
   memberId: string;
-  change: "add" | "remove";
+  change: ChangeType;
 }
+
+export const applyFrontChange = (set: Set<string>, change: FrontChange) => {
+  if (change.change === "add") {
+    set.add(change.memberId);
+  } else if (change.change === "remove") {
+    set.delete(change.memberId);
+  } else {
+    impossible(change.change);
+  }
+};
+
+export const simplifyFrontChange = (changes: FrontChange[]): FrontChange[] => {
+  const changesByMember = new Map<string, ChangeType>();
+  for (const { memberId, change } of changes) {
+    if (!changesByMember.has(memberId)) {
+      changesByMember.set(memberId, change);
+      continue;
+    }
+    const prev = changesByMember.get(memberId);
+    if (prev === change) {
+      // no-op
+      continue;
+    }
+    // changes cancel
+    changesByMember.delete(memberId);
+  }
+  const simplified: FrontChange[] = [];
+  for (const memberId of changesByMember.keys()) {
+    simplified.push({
+      memberId,
+      change: changesByMember.get(memberId)!!,
+    });
+  }
+  return simplified;
+};
 
 export interface EntityLink {
   source: string;

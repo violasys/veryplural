@@ -20,3 +20,10 @@ export function AddToFrontIcon(props: {
 }): React.ReactElement {
   return <MaterialIcons name="add" {...props} />;
 }
+
+export function RemoveFromFrontIcon(props: {
+  size: number;
+  color: string;
+}): React.ReactElement {
+  return <MaterialIcons name="remove" {...props} />;
+}

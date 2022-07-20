@@ -1,6 +1,6 @@
 import { Appearance, StyleSheet, View, ViewStyle } from "react-native";
 
-import { Text } from "./Themed";
+import { Text, useThemeColor } from "./Themed";
 import { FrontChange, SystemMember } from "../types";
 import Avi, { Size } from "./Avi";
 import Card from "./Card";
@@ -9,80 +9,89 @@ import Spacer from "./Spacer";
 import Ruler from "./Ruler";
 import Badge from "./Badge";
 import { impossible } from "../util/typeutil";
-import FrontIcon, { AddToFrontIcon } from "./FrontIcon";
-import SelectModal from "./SelectModal";
-import { useState } from "react";
+import FrontIcon, { AddToFrontIcon, RemoveFromFrontIcon } from "./FrontIcon";
 
 export default function MemberCard(props: MemberCardProps) {
-  const variant = (!props.showDetails && props.variant) || "default";
-  const [showingFrontChange, setShowingFrontChange] = useState<boolean>(false);
+  const showDetails = props.showDetails && !props.editingFront;
+  const variant = (!showDetails && props.variant) || "default";
+  const text = useThemeColor({}, "text");
+  const primary = useThemeColor({}, "tabIconSelected");
   return (
-    <Card style={[styles.card, getVariantStyle(variant)]}>
-      <View style={styles.main}>
-        <Avi
-          size={getAviSize(variant)}
-          uri={props.member.avatar}
-          color={props.member.color}
-        />
-        <View style={[styles.namebox]}>
-          <Text style={styles.name}>
-            {props.member.displayname || props.member.name}
-          </Text>
-          {props.member.pronouns && (
-            <Text style={styles.pronouns}>{props.member.pronouns}</Text>
-          )}
-        </View>
-        <Spacer />
-        <View style={styles.controls}>
-          {!props.editingFront && props.isFronting && (
-            <IconButton
-              icon={(props) => (
-                <FrontIcon fronting={true} size={32} {...props} />
-              )}
-              selected={props.isFronting}
-            />
-          )}
-          {props.editingFront && (
-            <IconButton
-              icon={(props) => (
-                <FrontIcon fronting={true} size={32} {...props} />
-              )}
-              offIcon={(props) => (
-                <FrontIcon fronting={false} size={32} {...props} />
-              )}
-              selected={props.isFronting}
-              onPress={() => {
-                if (typeof props.changeFront === "undefined") {
-                  return;
-                }
-                if (!props.isFronting) {
-                  setShowingFrontChange(true);
-                  return;
-                }
-                props.changeFront({
-                  memberId: props.member.id,
-                  change: props.isFronting ? "remove" : "add",
-                });
-              }}
-            />
-          )}
-        </View>
-        {props.changeFront && (
-          <FrontChangeModal
-            member={props.member}
-            visible={showingFrontChange}
-            setVisible={setShowingFrontChange}
-            changeFront={props.changeFront}
+    <View
+      style={{
+        flexDirection: "row",
+      }}
+    >
+      <Card style={[styles.card, getVariantStyle(variant)]}>
+        <View style={styles.main}>
+          <Avi
+            size={getAviSize(variant)}
+            uri={props.member.avatar}
+            color={props.member.color}
           />
+          <View style={[styles.namebox]}>
+            <Text style={styles.name}>
+              {props.member.displayname || props.member.name}
+            </Text>
+            {props.member.pronouns && (
+              <Text style={styles.pronouns}>{props.member.pronouns}</Text>
+            )}
+          </View>
+          <Spacer />
+          <View style={styles.controls}>
+            {props.isFronting && (
+              <IconButton
+                icon={(_) => (
+                  <FrontIcon fronting={true} size={32} color={primary} />
+                )}
+                selected={props.isFronting}
+              />
+            )}
+          </View>
+        </View>
+        {showDetails && (
+          <>
+            <Ruler />
+            <Details {...props} />
+          </>
         )}
-      </View>
-      {props.showDetails && (
-        <>
-          <Ruler />
-          <Details {...props} />
-        </>
+      </Card>
+
+      {props.editingFront && (
+        <Card
+          style={[
+            styles.card,
+            getVariantStyle(variant),
+            {
+              flex: 0,
+              alignContent: "center",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingLeft: 30,
+              paddingRight: 30,
+              marginLeft: 0,
+            },
+          ]}
+        >
+          <IconButton
+            icon={(_) => {
+              if (!props.isFronting) {
+                return <AddToFrontIcon size={32} color={text} />;
+              }
+              return <RemoveFromFrontIcon size={32} color={text} />;
+            }}
+            selected={props.modifiedFront || undefined}
+            onPress={() => {
+              if (!props.changeFront) return;
+              props.changeFront({
+                memberId: props.member.id,
+                change: props.isFronting ? "remove" : "add",
+              });
+            }}
+          />
+        </Card>
       )}
-    </Card>
+    </View>
   );
 }
 
@@ -128,46 +137,9 @@ export interface MemberCardProps {
   showDetails?: boolean;
   variant?: MemberCardVariant;
   editingFront?: boolean;
+  modifiedFront?: boolean;
   isFronting?: boolean;
   changeFront?: (change: FrontChange) => void;
-}
-
-interface FrontChangeModalProps
-  extends Pick<MemberCardProps, "member" | "isFronting"> {
-  visible: boolean;
-  setVisible: (visible: boolean) => void;
-  changeFront: (change: FrontChange) => void;
-}
-
-function FrontChangeModal(props: FrontChangeModalProps): React.ReactElement {
-  return (
-    <SelectModal<"add" | "set" | "remove">
-      visible={props.visible}
-      onClose={(change) => {
-        if (typeof change !== "undefined") {
-          props.changeFront({
-            change,
-            memberId: props.member.id,
-          });
-        }
-        props.setVisible(false);
-      }}
-      options={[
-        {
-          value: "add",
-          label: "add to front",
-          icon: (props) => <AddToFrontIcon size={24} {...props} />,
-        },
-        {
-          value: "set",
-          label: "set as front",
-          icon: (props) => <FrontIcon fronting={true} size={24} {...props} />,
-        },
-      ]}
-      animationType="none"
-      title={props.member.name}
-    />
-  );
 }
 
 const styles = StyleSheet.create({
