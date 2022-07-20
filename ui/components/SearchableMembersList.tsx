@@ -295,6 +295,7 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
             justifyContent: "center",
             alignContent: "center",
             alignItems: "center",
+            overflow: "hidden",
           }}
         >
           <Button title="edit front" onPress={() => setEditingFront(true)} />
@@ -322,6 +323,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignContent: "stretch",
     margin: 8,
+    overflow: "hidden",
   },
   search: {
     flex: 1,

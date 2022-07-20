@@ -53,7 +53,7 @@ export default function MembersScreen({
     {
       id: "gwen-mem",
       name: "Morrigan",
-      avatar: "https://violasys.github.io/assets/images/pfp-gwen-mem.png",
+      avatar: "https://violasys.github.io/assets/images/pfp-morrigan.png",
       pronouns: "She/They",
       roles: ["gatekeeper", "eraser", "architect"],
       color: "#000000",
@@ -61,7 +61,7 @@ export default function MembersScreen({
     {
       id: "lilah",
       name: "Lilah",
-      avatar: "https://violasys.github.io/assets/images/pfp-gwen-lilah.png",
+      avatar: "https://violasys.github.io/assets/images/pfp-lilah.png",
       pronouns: "She/Her",
       roles: ["host", "amnesian protector"],
       tags: ["age-slider"],
@@ -70,7 +70,7 @@ export default function MembersScreen({
     {
       id: "demi",
       name: "Demi",
-      avatar: "https://violasys.github.io/assets/images/pfp-gwen-demi.png",
+      avatar: "https://violasys.github.io/assets/images/pfp-demi.png",
       pronouns: "She/They",
       roles: ["host", "worker", "protector"],
       color: "#aa11aa",
@@ -78,9 +78,18 @@ export default function MembersScreen({
     {
       id: "jan",
       name: "Jan",
+      avatar: "https://violasys.github.io/assets/images/pfp-jan.png",
       pronouns: "They/Them",
       roles: ["former host"],
       color: "#116611",
+    },
+    {
+      id: "emily",
+      name: "Emily",
+      avatar: "https://violasys.github.io/assets/images/pfp-emily.jpg",
+      pronouns: "She/Her",
+      roles: [],
+      color: "#88ccdd",
     },
   ];
   const [fronting, setFronting] = useState(new Set<string>(["demi", "gwen"]));
