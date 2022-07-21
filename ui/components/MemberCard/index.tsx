@@ -16,8 +16,7 @@ import EditingCard from "./EditingCard";
 import { MaterialIcons } from "@expo/vector-icons";
 
 export default function MemberCard(props: MemberCardProps) {
-  // TODO remove jan from debug condition here and just make it 'false'.
-  const [editing, setEditing] = useState<boolean>(props.member.id === "jan");
+  const [editing, setEditing] = useState<boolean>(false);
   if (editing && !props.editingFront && props.mutable) {
     return (
       <EditingCard
