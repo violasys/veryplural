@@ -14,6 +14,7 @@ import { MemberCardProps, MemberCardVariant } from "./types";
 import { useState } from "react";
 import EditingCard from "./EditingCard";
 import { MaterialIcons } from "@expo/vector-icons";
+import Label from "../Label";
 
 export default function MemberCard(props: MemberCardProps) {
   const [editing, setEditing] = useState<boolean>(false);
@@ -157,7 +158,16 @@ function Details(props: Props): React.ReactElement {
   const buttonColor = useThemeColor({}, "primary");
   return (
     <View style={styles.details}>
-      <Text style={styles.description}>{props.member.description}</Text>
+      {props.member.description && (
+        <Text style={styles.description}>{props.member.description}</Text>
+      )}
+      {props.member.notes && (
+        <>
+          {props.member.description && <Ruler />}
+          <Label label="Private Notes" />
+          <Text style={styles.description}>{props.member.notes}</Text>
+        </>
+      )}
       <View
         style={{
           flexDirection: "row",

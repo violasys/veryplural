@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import SearchableMembersList from "../components/SearchableMembersList";
 
 import { BgView } from "../components/Themed";
-import { FrontChange, RootTabScreenProps, SystemMember } from "../types";
+import { RootTabScreenProps, SystemMember } from "../types";
 import { impossible } from "../util/typeutil";
 
 export default function MembersScreen({
@@ -24,7 +24,8 @@ export default function MembersScreen({
       name: "Ria",
       avatar: "https://violasys.github.io/assets/images/pfp-ria2s.png",
       pronouns: "She/Her",
-      description: "hi this is some placeholder text",
+      description: "I like speed-cubing (I'm not very good at it)",
+      notes: "blend of a tulpa and an autism holder",
       color: "#aa2222",
       roles: ["trauma holder"],
     },
@@ -35,6 +36,7 @@ export default function MembersScreen({
       pronouns: "She/Her",
       roles: ["host"],
       color: "#881188",
+      description: "hi I'm the host and stuff",
     },
     {
       id: "melanie",
@@ -85,7 +87,7 @@ export default function MembersScreen({
       pronouns: "They/Them",
       roles: ["former host"],
       color: "#116611",
-      description: "Jan is a previous host from college.",
+      notes: "Jan is a previous host from college.",
     },
     {
       id: "emily",
