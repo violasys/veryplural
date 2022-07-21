@@ -11,9 +11,11 @@ export default {
     tabIconDefault: "#ccc",
     tabIconSelected: tintColorLight,
     primary: "#42a5f5",
+    secondary: "#ba68c8",
     error: "#ef5350",
     success: "#4caf50",
     warning: "#ff9800",
+    info: "#03a9f4",
   },
   dark: {
     text: "#e0e0e0",
@@ -24,8 +26,10 @@ export default {
     tabIconDefault: "#ccc",
     tabIconSelected: tintColorDark,
     primary: "#1565c0",
+    secondary: "#7b1fa2",
     error: "#c62828",
     success: "#1b5e20",
     warning: "#e65100",
+    dark: "#01579b",
   },
 };

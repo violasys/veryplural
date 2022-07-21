@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { FlatList, Pressable, useWindowDimensions, View } from "react-native";
-import { FrontChange, FrontingState, SystemMember } from "../types";
+import { FrontingState, SystemMember } from "../types";
 import { getOrientation } from "../util/orientation";
-import MemberCard, { MemberCardVariant } from "./MemberCard";
+import MemberCard from "./MemberCard";
+import { MemberCardVariant } from "./MemberCard/types";
 
 export interface MemberListProps {
   members: SystemMember[];
@@ -54,6 +55,7 @@ export default function MembersList(
             props.frontingState?.changeFront([change]);
           }}
           editingFront={props.editingFront}
+          mutable={props.mutable}
         />
       </Pressable>
     );

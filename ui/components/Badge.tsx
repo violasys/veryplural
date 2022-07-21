@@ -3,7 +3,7 @@ import { StyleSheet, Text, TextStyle } from "react-native";
 import { useThemeColor } from "./Themed";
 
 export default function Badge(props: Props): React.ReactElement {
-  const colorStyle = getColorStyle(props.color || "default");
+  const colorStyle = getColorStyle(props.color || "default", props.textColor);
   return (
     <Text style={[styles.badge, colorStyle]}>
       {props.label.toLocaleUpperCase()}
@@ -14,9 +14,12 @@ export default function Badge(props: Props): React.ReactElement {
 interface Props {
   label: string;
   color?: string;
+  textColor?: string;
 }
 
-const getColorStyle = (c: string): TextStyle => {
+const getColorStyle = (c: string, textColor?: string): TextStyle => {
+  const themeTextColor = useThemeColor({}, "text");
+
   if (c === "default") {
     return {
       color: "rgb(26, 32, 44)",
@@ -30,7 +33,7 @@ const getColorStyle = (c: string): TextStyle => {
     };
   }
   return {
-    color: "rgb(26, 32, 44)",
+    color: textColor || themeTextColor,
     backgroundColor: c,
   };
 };
@@ -44,5 +47,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     borderRadius: 2,
     overflow: "hidden",
+    whiteSpace: "nowrap",
+    flexWrap: "nowrap",
   },
 });

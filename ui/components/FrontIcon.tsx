@@ -1,4 +1,6 @@
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import Badge from "./Badge";
+import { useThemeColor } from "./Themed";
 
 interface Props {
   size: number;
@@ -10,6 +12,10 @@ export default function FrontIcon({
   fronting,
   ...props
 }: Props): React.ReactElement {
+  if (true) {
+    const primary = useThemeColor({}, "primary");
+    return <Badge color={primary} textColor="white" label="front" />;
+  }
   const name = fronting ? "steering" : "steering-off";
   return <MaterialCommunityIcons name={name} {...props} />;
 }

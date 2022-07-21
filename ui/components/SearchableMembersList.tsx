@@ -274,11 +274,23 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
           ),
         }))}
       />
-      <TextInput
-        style={styles.search}
-        placeholder="Search"
-        onChangeText={(text) => setSearchText(text.trim().toLocaleLowerCase())}
-      />
+      <View
+        style={{
+          display: "flex",
+          flex: 1,
+          flexShrink: 1,
+          alignContent: "stretch",
+          alignItems: "stretch",
+        }}
+      >
+        <TextInput
+          style={styles.search}
+          placeholder="Search"
+          onChangeText={(text) =>
+            setSearchText(text.trim().toLocaleLowerCase())
+          }
+        />
+      </View>
       <IconButton
         icon={(props) => (
           <MaterialCommunityIcons
@@ -329,6 +341,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 20,
     padding: 8,
+    flexShrink: 1,
   },
   title: {
     fontSize: 20,

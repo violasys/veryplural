@@ -15,7 +15,9 @@ export default function MembersScreen({
       name: "Alice",
       avatar: "https://violasys.github.io/assets/images/pfp-alice2.png",
       pronouns: "They/She",
+      displayname: "Alice (They/She) | Viola System",
       roles: ["gatekeeper", "caretaker"],
+      tags: ["one", "two", "three", "four", "five", "six", "seven"],
     },
     {
       id: "ria",
@@ -92,7 +94,7 @@ export default function MembersScreen({
       color: "#88ccdd",
     },
   ];
-  const [fronting, setFronting] = useState(new Set<string>(["demi", "gwen"]));
+  const [fronting, setFronting] = useState(new Set<string>(["alice", "gwen"]));
 
   return (
     <BgView style={styles.container}>
