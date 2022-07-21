@@ -14,6 +14,7 @@ import {
   simplifyFrontChange,
   SystemMember,
 } from "../types";
+import ActionButtons from "./ActionButtons";
 import FrontIcon from "./FrontIcon";
 import IconButton from "./IconButton";
 import { MemberCardVariant } from "./MemberCard";
@@ -140,38 +141,13 @@ interface FrontControlsProps {
 }
 
 const FrontControls = (props: FrontControlsProps): React.ReactElement => {
-  const secondaryColor = useThemeColor({}, "tabIconDefault");
-  const primaryColor = useThemeColor({}, "primary");
   return (
-    <View
-      style={{
-        flexDirection: "column",
-        alignContent: "stretch",
-        alignItems: "stretch",
-        padding: 8,
-      }}
-    >
-      <View
-        style={{
-          flexDirection: "row",
-        }}
-      >
-        <View style={{ flex: 1, marginRight: 4 }}>
-          <Button
-            title="cancel"
-            onPress={props.cancelFrontChanges}
-            color={secondaryColor}
-          />
-        </View>
-        <View style={{ flex: 1, marginLeft: 4 }}>
-          <Button
-            title="save front changes"
-            onPress={props.commitFrontChanges}
-            color={primaryColor}
-          />
-        </View>
-      </View>
-    </View>
+    <ActionButtons
+      actionText="save front changes"
+      onAction={props.commitFrontChanges}
+      onCancel={props.cancelFrontChanges}
+      style={{ padding: 8 }}
+    />
   );
 };
 
@@ -195,6 +171,7 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
   const [sortMode, setSortMode] = useState<SortMode>(SORT_MODES[0]);
   const [showingSortModal, setShowingSortModal] = useState<boolean>(false);
   const { editingFront, setEditingFront } = props;
+  const primaryColor = useThemeColor({}, "primary");
 
   const createFilter =
     (searchText: string): Predicate<SystemMember> =>
@@ -310,7 +287,11 @@ const FilterControls = (props: FilterControlsProps): React.ReactElement => {
             overflow: "hidden",
           }}
         >
-          <Button title="edit front" onPress={() => setEditingFront(true)} />
+          <Button
+            title="edit front"
+            color={primaryColor}
+            onPress={() => setEditingFront(true)}
+          />
         </View>
       )}
       {!true && (

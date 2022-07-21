@@ -80,10 +80,12 @@ export default function MembersScreen({
     {
       id: "jan",
       name: "Jan",
+      displayname: "Jan (They/Them) | Viola",
       avatar: "https://violasys.github.io/assets/images/pfp-jan.png",
       pronouns: "They/Them",
       roles: ["former host"],
       color: "#116611",
+      description: "Jan is a previous host from college.",
     },
     {
       id: "emily",

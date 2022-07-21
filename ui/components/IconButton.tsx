@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
+import useColorScheme from "../hooks/useColorScheme";
+import { impossible } from "../util/typeutil";
 import { useThemeColor } from "./Themed";
 
 export default function IconButton(props: IconButtonProps): React.ReactElement {
@@ -14,6 +16,17 @@ export default function IconButton(props: IconButtonProps): React.ReactElement {
 
   if (pressed) {
     style.push(styles.pressed);
+  }
+
+  if (props.bordered) {
+    const theme = useColorScheme();
+    if (theme === "light") {
+      style.push(styles.borderedLight);
+    } else if (theme === "dark") {
+      style.push(styles.borderedDark);
+    } else {
+      impossible(theme);
+    }
   }
 
   return (
@@ -42,6 +55,7 @@ export interface IconButtonProps {
   text?: string;
   icon: (props: { color: string }) => React.ReactElement;
   offIcon?: (props: { color: string }) => React.ReactElement;
+  bordered?: boolean;
 }
 
 const getColorType = (selected?: boolean) => {
@@ -65,5 +79,16 @@ const styles = StyleSheet.create({
   text: {
     marginLeft: 5,
     fontSize: 20,
+  },
+  borderedLight: {
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    borderColor: "#c6c6c6",
+    borderWidth: 1,
+  },
+  borderedDark: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#121212",
   },
 });

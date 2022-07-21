@@ -13,9 +13,11 @@ import FrontIcon, { AddToFrontIcon, RemoveFromFrontIcon } from "../FrontIcon";
 import { MemberCardProps, MemberCardVariant } from "./types";
 import { useState } from "react";
 import EditingCard from "./EditingCard";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function MemberCard(props: MemberCardProps) {
-  const [editing, setEditing] = useState<boolean>(false);
+  // TODO remove jan from debug condition here and just make it 'false'.
+  const [editing, setEditing] = useState<boolean>(props.member.id === "jan");
   if (editing && !props.editingFront && props.mutable) {
     return (
       <EditingCard
@@ -153,7 +155,7 @@ function Details(props: Props): React.ReactElement {
     ...(props.member.roles || []),
     ...(props.member.tags || []),
   ];
-  const buttonColor = useThemeColor({}, "warning");
+  const buttonColor = useThemeColor({}, "primary");
   return (
     <View style={styles.details}>
       <Text style={styles.description}>{props.member.description}</Text>
@@ -179,11 +181,16 @@ function Details(props: Props): React.ReactElement {
               marginLeft: "1em",
               display: "flex",
               alignContent: "stretch",
-              justifyContent: "stretch",
               alignItems: "stretch",
             }}
           >
-            <Button title="edit" color={buttonColor} />
+            <IconButton
+              icon={(props) => (
+                <MaterialIcons name="edit" size={32} {...props} />
+              )}
+              bordered={true}
+              onPress={() => props.startEditing()}
+            />
           </View>
         )}
       </View>
@@ -261,5 +268,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     flexWrap: "nowrap",
     whiteSpace: "nowrap",
+    opacity: 0.8,
   },
 });

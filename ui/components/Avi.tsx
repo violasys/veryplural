@@ -48,7 +48,7 @@ const interpretSize = (size: Size | undefined): number => {
   if (size === "small") return 24;
   if (size === "slim") return 50;
   if (size === "medium") return 64;
-  if (size === "large") return 512;
+  if (size === "large") return 100;
   impossible(size);
 };
 

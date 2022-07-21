@@ -48,7 +48,15 @@ export interface SystemMember {
   links?: EntityLink[];
   roles?: string[];
   tags?: string[];
+  notes?: string;
+  privacy?: PrivacyLevel;
 }
+
+export type PrivacyLevel =
+  | "public"
+  | "friends-only"
+  | "trusted-only"
+  | "secret";
 
 export interface FrontingState {
   frontingIds: Set<string>;
